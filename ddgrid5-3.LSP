@@ -1,15 +1,16 @@
 ;;This is Program was written by Kyaw Naing Win ex-Survey-GIS Specialist, WADP HQ, Mong Pawk.
-;;I am currently working as IMO in UNITED NATIONS PAKISTAN
-;;----------------------------------------------------------------------
+;;I am currently working as IMO in UNITED NATIONS OCHA PAKISTAN
+;;email: kyawnaingwinknw@gmail.com
+;;---------------------------------------------------------------------------------------
 ;;You must maitain my information intact.
 ;;I grant you to use this program without any charges 
 ;;I do not grant that it will be error free and therefore
 ;;use it at your own risk.
 ;;----------------------------------------------------------------------------------------
-(defun c:delgrid (); delete grids just created but not other objects 
-  (command "erase" "all" "remove" "p" "")
-  (command "purge" "layer" "grid" "y" "") ; to erase grid layer
-)  ; this part of program may accdentally erase existing objects if there is no grids.
+; (defun c:delgrid (); delete grids just created but not other objects 
+  ; (command "erase" "all" "remove" "p" "")
+  ; (command "purge" "layer" "grid" "y" "") ; to erase grid layer
+; )  ; this part of program may accdentally erase existing objects if there is no grids.
 
 (defun c:DDGRID	()
 					;to save old system variables
@@ -24,7 +25,7 @@
 					;to off osmode and command line echo
   (setvar "osmode" 0)
   (setvar "cmdecho" 0)
-  (ssget "all");to be sure to save previously drawn objects from in case of erasing grids
+  ;(ssget "all");to be sure to save previously drawn objects from in case of erasing grids
   
   (defun RESTORE_VAR_SETTINGS ()
     (setvar "CECOLOR" oldCecolor)
@@ -191,8 +192,8 @@
     (setq mngdVno (atoi (get_tile "mngd_Vno"))) ; number of minor grids in between of two vertical grids
     (setq scaleH (atof (get_tile "h_scale"))) ; horizontal scale
     (setq scaleV (atof (get_tile "v_scale"))) ; vertical scale
-    (setq txtSize (atoi (get_tile "gd_txt")))
-    (setq txtIndent (atoi (get_tile "gd_txind")))
+    (setq txtSize (atof (get_tile "gd_txt")))
+    (setq txtIndent (atof (get_tile "gd_txind")))
     (setq annogrd (get_tile "annogrd")) ; check labeling requirement
     (setq minorgd (get_tile "minorgd")) ; check minor grid requirement
     (setq gridLayer (get_tile "grid_layer")) ;check grid layer requirement
@@ -652,7 +653,7 @@
   (princ)
 )
 
-(princ "\nYou have loaded DDGRID5.3.lsp written by Kyaw Naing Win. Type DDGRID to draw grids.")
+(princ "\nYou have loaded DDGRID5.3.lsp Github repository written by Kyaw Naing Win. Type DDGRID to draw grids.")
 (princ)
 
 (alert

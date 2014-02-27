@@ -1,6 +1,6 @@
-/*Ddgrid5-2.dcl for ddgrid5-2.lsp*/
+/*Ddgrid5-3.dcl for ddgrid5-3.lsp*/
 gd_box1 : dialog {
-	label = "GRID MAKER Ver 5.2 (Developed by Kyaw Naing Win)";
+	label = "GRID MAKER Ver 5.3 (Developed by Kyaw Naing Win)";
 	  : row {
 	    : column {
 	    	: boxed_column {
