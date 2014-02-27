@@ -26,7 +26,7 @@
   (setvar "cmdecho" 0)
   (ssget "all");to be sure to save previously drawn objects from in case of erasing grids
   
-  (defun restore ()
+  (defun RESTORE_VAR_SETTINGS ()
     (setvar "CECOLOR" oldCecolor)
     (setvar "OSMODE" oldOsmode)
     (setvar "LUPREC" oldLuprec)
@@ -36,7 +36,7 @@
 	(setvar "ANGBASE" oldAngbase)
 	(setvar "ANGDIR" oldAngdir)
   )
- (defun makeGridLayer ()
+ (defun MAKE_GRID_LAYER ()
     (command "-layer" "n" "Grid" "s" "Grid" "")
  )
  
@@ -95,18 +95,18 @@
   ;;
   ;;set major grid colors from color dialogue.
   ;;
-  (defun DO_MJGD_COLOR ()
-    (if	(setq temp_color (acad_colordlg mjgdcolor 256))
+  (defun SET_MAJOR_GRID_COLOR ()
+    (if	(setq temp_color (acad_colordlg majorGridColor 256))
       (progn
-		(setq mjgdcolor temp_color)
-		(set_tile "mjgdcolor_text" (gridcolor mjgdcolor "mjgd"))
+		(setq majorGridColor temp_color)
+		(set_tile "mjgdcolor_text" (GRID_COLOR majorGridColor "mjgd"))
 		(start_image "mjgdcolor_image")
 		(fill_image
 		  0
 		  0
 		  x_swatch
 		  y_swatch
-		  (image_col mjgdcolor "mjgd")
+		  (IMAGE_COLOR majorGridColor "mjgd")
 		)
 		(end_image)
 		  )
@@ -114,12 +114,12 @@
   )
   ;;set grid text colors from color dialogue.
   ;;
-  (defun DO_MJGD_TEXT_COLOR ()
+  (defun SET_MAJOR_GRID_TEXT_COLOR ()
     (if	(setq temp_color (acad_colordlg 7 7))
       (progn
-		(setq mjgdtextcolor temp_color)
+		(setq majorGridTextColor temp_color)
 		(set_tile "mjgdtext_colortext"
-			  (gridcolor mjgdtextcolor "mjgdtext")
+			  (GRID_COLOR majorGridTextColor "mjgdtext")
 		)
 		(start_image "textcolor_image")
 		(fill_image
@@ -127,7 +127,7 @@
 		  0
 		  x_swatch
 		  y_swatch
-		  (image_col mjgdtextcolor "mjgdtext")
+		  (IMAGE_COLOR majorGridTextColor "mjgdtext")
 		)
 		(end_image)
       )
@@ -135,18 +135,18 @@
   )
   ;;
   ;;select minor grid color	
-  (defun DO_MNGD_COLOR ()
+  (defun SET_MINOR_GRID_COLOR ()
     (if	(setq temp_color (acad_colordlg 8 8))
       (progn
-		(setq mngdcolor temp_color)
-		(set_tile "mngdcolor_text" (gridcolor mngdcolor "mngd"))
+		(setq minorGridColor temp_color)
+		(set_tile "mngdcolor_text" (GRID_COLOR minorGridColor "mngd"))
 		(start_image "mngdcolor_image")
 		(fill_image
 		  0
 		  0
 		  x_swatch
 		  y_swatch
-		  (image_col mngdcolor "mngd")
+		  (IMAGE_COLOR minorGridColor "mngd")
 		)
 		(end_image)
       )
@@ -154,7 +154,7 @@
   )
   ;;
   ;;if the color is zero pass correct color number
-  (defun IMAGE_COL (colorint whichgrid)
+  (defun IMAGE_COLOR (colorint whichgrid)
     (cond
       ((and (= 0 colorint) (= whichgrid "mjgd")) 7)
       ((and (= 0 colorint) (= whichgrid "mjgdtext")) 7)
@@ -164,7 +164,7 @@
   )
   ;;
   ;;pass an integer and recieve a string stating the color name
-  (defun GRIDCOLOR (colorint whichgrid)
+  (defun GRID_COLOR (colorint whichgrid)
     (cond
       ((and (= 0 colorint) (= whichgrid "mjgd")) "7 - White")
       ((and (= 0 colorint) (= whichgrid "mjgdtext")) "7 - White")
@@ -184,15 +184,15 @@
   
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;getting information form the interface;;;;
-  (defun get_info ()
+  (defun GET_USER_INPUTS ()
     (setq spcH (atoi (get_tile "gd_spcH"))); horizontal spacing
     (setq spcV (atoi (get_tile "gd_spcV"))); vertical spacing
     (setq mngdHno (atoi (get_tile "mngd_Hno"))) ; number of minor grids in between of two horizontal grids
     (setq mngdVno (atoi (get_tile "mngd_Vno"))) ; number of minor grids in between of two vertical grids
-    (setq hscale (atof (get_tile "h_scale")))
-    (setq vscale (atof (get_tile "v_scale")))
-    (setq txt (atoi (get_tile "gd_txt")))
-    (setq txind (atoi (get_tile "gd_txind")))
+    (setq scaleH (atof (get_tile "h_scale"))) ; horizontal scale
+    (setq scaleV (atof (get_tile "v_scale"))) ; vertical scale
+    (setq txtSize (atoi (get_tile "gd_txt")))
+    (setq txtIndent (atoi (get_tile "gd_txind")))
     (setq annogrd (get_tile "annogrd")) ; check labeling requirement
     (setq minorgd (get_tile "minorgd")) ; check minor grid requirement
     (setq gridLayer (get_tile "grid_layer")) ;check grid layer requirement
@@ -213,9 +213,9 @@
       (exit)
     )
     (setq cecolor	(getvar "cecolor")
-	  mjgdcolor	(atoi cecolor)
-	  mngdcolor	8
-	  mjgdtextcolor	7
+	  majorGridColor	(atoi cecolor)
+	  minorGridColor	8
+	  majorGridTextColor	7
     )
 
     (set_tile "gd_spcH" "100")
@@ -244,7 +244,7 @@
       0
       x_swatch
       y_swatch
-      (image_col mjgdcolor "mjgd")
+      (IMAGE_COLOR majorGridColor "mjgd")
     )
     (end_image)
 
@@ -254,7 +254,7 @@
       0
       x_swatch
       y_swatch
-      (image_col 7 "mjgdtext")
+      (IMAGE_COLOR 7 "mjgdtext")
     )
     (end_image)
 
@@ -264,17 +264,17 @@
       0
       x_swatch
       y_swatch
-      (image_col 8 "mngd")
+      (IMAGE_COLOR 8 "mngd")
     )
     (end_image)
 					;(label)
     (onoff)
     (action_tile "annogrd" "(ONOFF)")
     (action_tile "minorgd" "(ONOFF)")
-    (action_tile "mjgd_color" "(DO_MJGD_COLOR)")
-    (action_tile "mjgdtext_color" "(DO_MJGD_TEXT_COLOR)")
-    (action_tile "mngd_color" "(DO_MNGD_COLOR)")
-    (action_tile "accept" "(get_info)")
+    (action_tile "mjgd_color" "(SET_MAJOR_GRID_COLOR)")
+    (action_tile "mjgdtext_color" "(SET_MAJOR_GRID_TEXT_COLOR)")
+    (action_tile "mngd_color" "(SET_MINOR_GRID_COLOR)")
+    (action_tile "accept" "(GET_USER_INPUTS)")
     (action_tile
       "cancel"
       "(done_dialog) (princ \";User Cancel....\")(exit)"
@@ -284,14 +284,14 @@
   )
 ;;;
 ;;;
-  (defun REQ ()
+  (defun GET_GRID_FRAME ()
 					; ask user to draw a rectangle on the screen
     (setq p1 (getpoint "::First Corner Point"))
     (terpri)
     (setq p2 (getcorner p1 "::Second Corner Point"))
     (terpri)
     (setq p1x (car p1))
-    (setq tmpX1 p1X)
+    (setq tmpX1 p1x)
     (setq p1y (cadr p1))
     (setq tmpY1 p1y)
     (setq p2x (car p2))
@@ -317,7 +317,7 @@
 ;; 			;first coordinate point to be marked   revamped codes                         ;;
   ;;this function was improved to run in negative quadrants                              ;;
   ;;; revamped codes - 26 Feb 2014
-  (defun MARKPT()
+  (defun GET_FIRST_POINTS()
     	(setq x1 (car p1))
     	(setq y1 (cadr p1))
 	(setq index1 (fix (/ x1 spcH)))
@@ -326,26 +326,26 @@
 	(setq y1 (* index2 spcV))
 	(if (< x1 (car p1)) (progn (setq index1 (+ index1 1)) (setq x1 (+ x1 spcH) ))) ; to make sure star x is after the left margin line
 	(if (< y1 (cadr p1)) (progn (setq index2 (+ index2 1)) (setq y1 (+ y1 spcV) ))) ; to make sure start y is about the bottom line
-	(setq vp1 (list x1 (cadr p1)))	; vp1= start point of first vertical line major
+	(setq vp1 (list x1 (cadr p1)))	; start point of first vertical line major
 	(setq vp2 (list x1 (cadr p2)))	; end point of vertical line
-	(setq hp1 (list (car p1) y1))	; hp1= start point of first horizontal line major
+	(setq hp1 (list (car p1) y1))	; start point of first horizontal line major
 	(setq hp2 (list (car p2) y1))	; end point of first horizontal line
 
     	; indexes for labelling
     	(setq lbindex1 index1)	
     	(setq lbindex2 index2)
 	
-  ) ;END of MARKPT()
+  ) ;END of GET_FIRST_POINTS()
   
   
   
 
 					;/////////////////////////////////////////////////////////////////////////////////////////////////////
   ;;Drawing minor grids
-  (defun MINOR_H ()
+  (defun DRAW_MINOR_GRID_H ()
     (setvar "CMDECHO" 0)
     (setvar "OSMODE" 0)
-    (setvar "CECOLOR" (itoa mngdcolor))
+    (setvar "CECOLOR" (itoa minorGridColor))
     (setq count mngdHno)
     (setq mngdspc (/ spcH (+ mngdHno 1)))	;convert from number of minor grid to minorgrid spacing
     (setq mngdspcH mngdspc)
@@ -395,10 +395,10 @@
 		(setq w nil)
       )
      )
-  )					; END of MINOR_H ()
+  )					; END of DRAW_MINOR_GRID_H ()
 
-  (defun MINOR_V ()
-    (setvar "CECOLOR" (itoa mngdcolor))
+  (defun DRAW_MINOR_GRID_V ()
+    (setvar "CECOLOR" (itoa minorGridColor))
     (setq count mngdVno )
     (setq mngdspc (/ spcV (+ mngdVno 1)))	;convert from number of minor grid to minorgrid spacing
     (setq mngdspcV mngdspc)
@@ -445,22 +445,19 @@
       )
     )   
 				
-  ); END of MINOR_V
-					;////////////////////////////////////; end of draw minor grid;/////////////////////////////////////
-
-
-
+  ); END of DRAW_MINOR_GRID_V
+;////////////////////////////////////; end of draw minor grid;/////////////////////////////////////
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Draw Major Grid;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  (defun MAJOR_GRID ()
+  (defun DRAW_MAJOR_GRID ()
     (setvar "CMDECHO" 0)
     (if	(= gridLayer "1")
-      (makeGridLayer)
+      (MAKE_GRID_LAYER)
     )
     (command "rectang" p1 p2)
-    (MARKPT)
+    (GET_FIRST_POINTS)
     (setvar "OSMODE" 0)
-    (setvar "CECOLOR" (itoa mjgdcolor))
+    (setvar "CECOLOR" (itoa majorGridColor))
     (setq nvp1 vp1)
     (setq nvp2 vp2)
     (setq nhp1 hp1)
@@ -489,14 +486,14 @@
     )
   )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (defun GRID_ANNO ()
+  (defun ADD_GRID_LABEL ()
     (setvar "CMDECHO" 0)
 	(setvar "ANGBASE" 0)
 	(setvar "ANGDIR" 0)
     (if	(= txtout "1")
       (progn (setq txtj1 "MR")
 	     (setq txtj2 "ML")
-	     (setq txind (* txind -1))
+	     (setq txtIndent (* txtIndent -1))
       )
       (progn (setq txtj1 "BL")
 	     (setq txtj2 "BR")
@@ -504,32 +501,32 @@
     )
    
     (setvar "OSMODE" 0)
-    (setvar "CECOLOR" (itoa mjgdtextcolor))
+    (setvar "CECOLOR" (itoa majorGridTextColor))
     (setq nvp1 vp1)
     (setq nvp2 vp2)
     (setq nhp1 hp1)
     (setq nhp2 hp2)
     
-    (defun annoFourSide	()
+    (defun Add_Label_To_Four_Sides	()
       (setq w "w")
       (while w
 		(command "text"			; lable on TOP
 			 "j"
 			 txtj1
-			 (list (car nvp1) (+ (cadr nvp1) txind))
-			 txt
+			 (list (car nvp1) (+ (cadr nvp1) txtIndent))
+			 txtSize
 			 "90"
-			 (strcat prefixE (rtos (* (car nvp1) Hscale) 2 luprec) suffixE)
+			 (strcat prefixE (rtos (* (car nvp1) scaleH) 2 luprec) suffixE)
 		)							
 
 
 		(command "text"			; label Below
 			 "j"
 			 txtj1
-			 (list (car nvp2) (- (cadr nvp2) txind))
-			 txt
+			 (list (car nvp2) (- (cadr nvp2) txtIndent))
+			 txtSize
 			 "270"
-			 (strcat prefixE (rtos (* (car nvp2) Hscale) 2 luprec) suffixE)
+			 (strcat prefixE (rtos (* (car nvp2) scaleH) 2 luprec) suffixE)
 		)
 		(setq nvp1 (list (* lbindex1 spcH) (cadr p1)))
 		(setq nvp2 (list (* lbindex1 spcH) (cadr p2)))
@@ -543,19 +540,19 @@
 		(command "text"			; label at Right 
 			 "j"
 			 txtj1
-			 (list (+ (car nhp1) txind) (cadr nhp1))
-			 txt
+			 (list (+ (car nhp1) txtIndent) (cadr nhp1))
+			 txtSize
 			 "0"
-			 (strcat prefixN (rtos (* (cadr nhp1) Vscale)2 luprec) suffixN)
+			 (strcat prefixN (rtos (* (cadr nhp1) scaleV)2 luprec) suffixN)
 		)
 
 		(command "text"			; label at Left
 			 "j"
 			 txtj2
-			 (list (- (car nhp2) txind) (cadr nhp2))
-			 txt
+			 (list (- (car nhp2) txtIndent) (cadr nhp2))
+			 txtSize
 			 "0"
-			 (strcat prefixN (rtos (* (cadr nhp2) Vscale)2 luprec) suffixN)
+			 (strcat prefixN (rtos (* (cadr nhp2) scaleV)2 luprec) suffixN)
 		)
 		(setq nhp1 (list (car p1) (* lbindex2 spcV)))
 		(setq nhp2 (list (car p2) (* lbindex2 spcV)))
@@ -566,16 +563,16 @@
       )
     )
 
-   (defun annoBelowLeft ()
+   (defun Add_Label_To_BelowLeft ()
       (setq w "w")
       (while w
 		(command "text"			; lable Below
 			 "j"
 			 txtj1
-			 (list (car nvp1) (+ (cadr nvp1) txind))
-			 txt
+			 (list (car nvp1) (+ (cadr nvp1) txtIndent))
+			 txtSize
 			 "90"
-			 (strcat prefixE (rtos (* (car nvp1) Hscale)2 luprec) suffixE)
+			 (strcat prefixE (rtos (* (car nvp1) scaleH)2 luprec) suffixE)
 		)
 		(setq nvp1 (list (* lbindex1 spcH) (cadr p1)))
 		(setq lbindex1 (+ 1 lbindex1))
@@ -589,10 +586,10 @@
 		(command "text"			; label at Left 
 			 "j"
 			 txtj1
-			 (list (+ (car nhp1) txind) (cadr nhp1))
-			 txt
+			 (list (+ (car nhp1) txtIndent) (cadr nhp1))
+			 txtSize
 			 "0"
-			 (strcat prefixN (rtos (* (cadr nhp1) Vscale)2 luprec) suffixN)
+			 (strcat prefixN (rtos (* (cadr nhp1) scaleV)2 luprec) suffixN)
 		)
 		(setq nhp1 (list (car p1) (* lbindex2 spcV)))
 		(setq lbindex2 (+ 1 lbindex2))
@@ -602,8 +599,8 @@
       )
     )
     (if	(= BelowLeft "1")
-      (annoBelowLeft)
-      (annoFourSide)
+      (Add_Label_To_BelowLeft)
+      (Add_Label_To_Four_Sides)
     )
     
   )
@@ -623,7 +620,7 @@
     "\n Mark Lower Left corner and
           \n Upper Right Corner"
   )
-  (REQ)
+  (GET_GRID_FRAME)
   (if (= -1 (setq dcl_id (load_dialog "ddgrid5-3.dcl")))
  	(progn
  	;; If there's a problem - display a message and set the
@@ -635,22 +632,22 @@
 
   (DDGRID_MAIN)
   
-  (MAJOR_GRID)
+  (DRAW_MAJOR_GRID)
 
   (if (= annogrd "1")
-    (GRID_ANNO)
+    (ADD_GRID_LABEL)
   )
   (if (and (= minorgd "1") (>= mngdHno 1))
 					;to avoid zero number of minor grid
-    (MINOR_H)
+    (DRAW_MINOR_GRID_H)
   )
   (if (and (= minorgd "1") (>= mngdVno 1))
 					;to avoid zero number of minor grid
-    (MINOR_V)
+    (DRAW_MINOR_GRID_V)
   )
   (princ)
   
-  (restore)
+  (RESTORE_VAR_SETTINGS)
   
   (princ)
 )
